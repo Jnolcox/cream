@@ -1,0 +1,43 @@
+package com.tmm.frm.controller;
+
+import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.tmm.frm.domain.Profile;
+import com.tmm.frm.domain.enums.BankProviders;
+import com.tmm.frm.domain.enums.TransactionTag;
+import com.tmm.frm.service.ProfileService;
+
+/**
+ * Controller class that handles all requests for the site home page - it
+ * determines whether or not the user is logged in and either displays the site
+ * welcome/login page or directs the user to their user profile page
+ * 
+ * @author robert.hinds
+ * 
+ */
+@Controller
+@RequestMapping("/transactions")
+public class TransactionsController {
+	
+	@Autowired ProfileService profileService; 
+
+	@RequestMapping(value="", method = RequestMethod.GET)
+	public ModelAndView homepage(HttpServletRequest request) throws Exception {
+		Profile p = profileService.getLoggedInProfile();
+		HashMap<String, Object> model = new HashMap<String,Object>();
+		model.put("personCreated", true);
+		model.put("tags", TransactionTag.values());
+		model.put("currentpage", "transactions");
+		model.put("accountCreated", p.getBankAccounts().size()>0);
+		model.put("providers", BankProviders.values());
+		return new ModelAndView("transactions", model);
+	}
+}
